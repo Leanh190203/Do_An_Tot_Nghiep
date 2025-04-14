@@ -1,95 +1,160 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ActivityIndicator, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
+import { authService } from '../services/api';
 
 export default function SignUpScreen() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSignUp = () => {
-    if (!username || !email || !password || !confirmPassword) {
-      alert("Vui lòng điền đầy đủ thông tin!");
+  const handleSignUp = async () => {
+    // Kiểm tra các trường bắt buộc
+    if (!name || !email || !password || !confirmPassword) {
+      Alert.alert("Lỗi", "Vui lòng điền đầy đủ thông tin!");
       return;
     }
 
+    // Kiểm tra định dạng email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Lỗi", "Email không đúng định dạng!");
+      return;
+    }
+
+    // Kiểm tra độ dài mật khẩu
+    if (password.length < 6) {
+      Alert.alert("Lỗi", "Mật khẩu phải có ít nhất 6 ký tự!");
+      return;
+    }
+
+    // Kiểm tra mật khẩu khớp nhau
     if (password !== confirmPassword) {
-      alert("Mật khẩu không khớp!");
+      Alert.alert("Lỗi", "Mật khẩu không khớp!");
       return;
     }
 
-    console.log('Đăng ký thành công:', { username, email, password });
-    alert("Đăng ký thành công!");
-    router.push('/home/dang_nhap'); // Chuyển về trang đăng nhập sau khi đăng ký
+    try {
+      setLoading(true);
+      
+      // Gửi dữ liệu đăng ký đến API backend
+      const result = await authService.register({
+        name,
+        email,
+        password
+      });
+      
+      console.log('Đăng ký thành công:', result);
+      
+      // Hiển thị thông báo thành công và chuyển hướng
+      Alert.alert(
+        "Thành công", 
+        result.message || "Đăng ký tài khoản thành công! Bạn có thể đăng nhập ngay bây giờ.", 
+        [
+          { 
+            text: "Đăng nhập", 
+            onPress: () => {
+              // Chuyển hướng đến trang đăng nhập với email đã điền sẵn
+              router.push({
+                pathname: '/home/dang_nhap',
+                params: { email: email }
+              });
+            } 
+          }
+        ]
+      );
+    } catch (error) {
+      // Xử lý lỗi
+      const errorMessage = error instanceof Error ? error.message : 'Đăng ký thất bại, vui lòng thử lại!';
+      Alert.alert("Lỗi", errorMessage);
+      console.error('Lỗi đăng ký:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <View style={styles.container}>
-      {/* Ảnh nền nhỏ phía trên */}
-      <Image 
-        source={require('@/assets/images/anh2.jpg')} 
-        style={styles.backgroundImage}
-        resizeMode="contain"
-      />
-
-      <View style={styles.formContainer}>
-        <Text style={styles.title}>Đăng Ký</Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Tên người dùng"
-          value={username}
-          onChangeText={setUsername}
-          placeholderTextColor="#B0C4DE"
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {/* Ảnh nền nhỏ phía trên */}
+        <Image 
+          source={require('@/assets/images/anh2.jpg')} 
+          style={styles.backgroundImage}
+          resizeMode="contain"
         />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          placeholderTextColor="#B0C4DE"
-        />
+        <View style={styles.formContainer}>
+          <Text style={styles.title}>Đăng Ký</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Mật khẩu"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          placeholderTextColor="#B0C4DE"
-        />
+          <TextInput
+            style={styles.input}
+            placeholder="Họ tên"
+            value={name}
+            onChangeText={setName}
+            placeholderTextColor="#B0C4DE"
+          />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Nhập lại mật khẩu"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry
-          placeholderTextColor="#B0C4DE"
-        />
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            placeholderTextColor="#B0C4DE"
+          />
 
-        <TouchableOpacity onPress={handleSignUp} style={styles.button}>
-          <Text style={styles.buttonText}>Đăng Ký Tài Khoản</Text>
-        </TouchableOpacity>
+          <TextInput
+            style={styles.input}
+            placeholder="Mật khẩu"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            placeholderTextColor="#B0C4DE"
+          />
 
-        <TouchableOpacity onPress={() => router.push('/home/dang_nhap')}>
-          <Text style={styles.link}>Đã có tài khoản? Đăng nhập ngay</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Nhập lại mật khẩu"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+            placeholderTextColor="#B0C4DE"
+          />
+
+          <TouchableOpacity onPress={handleSignUp} style={styles.button} disabled={loading}>
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Đăng Ký Tài Khoản</Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => router.push('/home/dang_nhap')}>
+            <Text style={styles.link}>Đã có tài khoản? Đăng nhập ngay</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#E3F2FD',
+  },
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#E3F2FD',
+    paddingVertical: 20,
   },
   backgroundImage: {
     width: '100%',

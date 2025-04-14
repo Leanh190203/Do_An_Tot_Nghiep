@@ -164,14 +164,9 @@ export default function HomeScreen() {
               <Text style={styles.title}>Tài Khoản</Text>
             </View>
             <CustomButton
-              title="Đăng Nhập"
-              iconName="login"
-              onPress={() => router.push("/home/dang_nhap")}
-            />
-            <CustomButton
-              title="Đăng Ký"
-              iconName="account-plus"
-              onPress={() => router.push("/home/dang_ki")}
+              title="Xem thông tin tài khoản"
+              iconName="account-details"
+              onPress={() => router.push("/home/tai_khoan")}
             />
           </View>
         )}
