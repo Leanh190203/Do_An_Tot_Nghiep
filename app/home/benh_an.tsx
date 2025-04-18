@@ -31,7 +31,9 @@ export default function MedicalRecordsScreen() {
           </TouchableOpacity>
         )}
       />
-      <TouchableOpacity style={styles.addButton} onPress={() => router.push('/')}
+      <TouchableOpacity 
+        style={styles.addButton} 
+        onPress={() => router.push('/home/add_benh_an' as never)}
       >
         <Ionicons name="add-circle" size={28} color="#fff" />
         <Text style={styles.addButtonText}>Thêm Bệnh Án</Text>

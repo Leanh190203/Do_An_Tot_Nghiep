@@ -130,10 +130,18 @@ export default function UserProfileScreen() {
             </View>
 
             <View style={styles.infoItem}>
-              <MaterialCommunityIcons name="shield-account" size={24} color="#1976D2" />
+              <MaterialCommunityIcons name="phone" size={24} color="#1976D2" />
               <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>Vai trò</Text>
-                <Text style={styles.infoValue}>{user.role === 'admin' ? 'Quản trị viên' : 'Người dùng'}</Text>
+                <Text style={styles.infoLabel}>Số điện thoại</Text>
+                <Text style={styles.infoValue}>{user.phone || 'Chưa cập nhật'}</Text>
+              </View>
+            </View>
+
+            <View style={styles.infoItem}>
+              <MaterialCommunityIcons name="home" size={24} color="#1976D2" />
+              <View style={styles.infoContent}>
+                <Text style={styles.infoLabel}>Địa chỉ</Text>
+                <Text style={styles.infoValue}>{user.address || 'Chưa cập nhật'}</Text>
               </View>
             </View>
           </View>
@@ -143,7 +151,7 @@ export default function UserProfileScreen() {
             
             <TouchableOpacity 
               style={styles.actionButton}
-              onPress={() => Alert.alert('Thông báo', 'Tính năng đang phát triển')}
+              onPress={() => router.push('/home/cap_nhat_thong_tin')}
             >
               <MaterialCommunityIcons name="account-edit" size={24} color="#1976D2" />
               <Text style={styles.actionButtonText}>Cập nhật thông tin cá nhân</Text>
@@ -152,7 +160,7 @@ export default function UserProfileScreen() {
             
             <TouchableOpacity 
               style={styles.actionButton}
-              onPress={() => Alert.alert('Thông báo', 'Tính năng đang phát triển')}
+              onPress={() => router.push('/home/doi_mat_khau')}
             >
               <MaterialCommunityIcons name="lock-reset" size={24} color="#1976D2" />
               <Text style={styles.actionButtonText}>Đổi mật khẩu</Text>

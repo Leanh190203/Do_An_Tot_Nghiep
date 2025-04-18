@@ -1,5 +1,11 @@
 import axios from 'axios';
 
+// Khai báo global namespace để TypeScript biết về authToken
+declare global {
+  var authToken: string | undefined;
+  var currentUser: any | undefined;
+}
+
 // Cấu hình Axios instance
 const api = axios.create({
   // Đối với máy ảo Android, sử dụng 10.0.2.2 để truy cập localhost của máy host
@@ -55,6 +61,52 @@ export const authService = {
       throw new Error('Đã xảy ra lỗi không xác định khi đăng nhập.');
     }
   },
+  
+  // Cập nhật thông tin người dùng
+  updateUserProfile: async (userId: number, userData: { name?: string; phone?: string; address?: string }) => {
+    try {
+      const token = global.authToken;
+      const response = await api.put(`/user/${userId}`, userData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          const errorMessage = error.response.data.message || 'Cập nhật thông tin thất bại';
+          throw new Error(errorMessage);
+        } else if (error.request) {
+          throw new Error('Không nhận được phản hồi từ server. Vui lòng kiểm tra kết nối mạng.');
+        }
+      }
+      throw new Error('Đã xảy ra lỗi không xác định khi cập nhật thông tin.');
+    }
+  },
+  
+  // Đổi mật khẩu
+  changePassword: async (userId: number, passwordData: { currentPassword: string; newPassword: string; confirmPassword: string }) => {
+    try {
+      const token = global.authToken;
+      const response = await api.put(`/user/${userId}/change-password`, passwordData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          const errorMessage = error.response.data.message || 'Đổi mật khẩu thất bại';
+          throw new Error(errorMessage);
+        } else if (error.request) {
+          throw new Error('Không nhận được phản hồi từ server. Vui lòng kiểm tra kết nối mạng.');
+        }
+      }
+      throw new Error('Đã xảy ra lỗi không xác định khi đổi mật khẩu.');
+    }
+  }
 };
 
 export default api; 

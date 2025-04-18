@@ -35,6 +35,24 @@ export default function AppLayout() {
           }} 
         />
         <Stack.Screen 
+          name="home/cap_nhat_thong_tin"
+          options={{ 
+            title: 'Cập nhật thông tin', 
+            headerStyle: { backgroundColor: '#1976D2' },
+            headerTintColor: '#fff',
+            headerTitleStyle: { fontWeight: 'bold' }
+          }} 
+        />
+        <Stack.Screen 
+          name="home/doi_mat_khau"
+          options={{ 
+            title: 'Đổi mật khẩu', 
+            headerStyle: { backgroundColor: '#1976D2' },
+            headerTintColor: '#fff',
+            headerTitleStyle: { fontWeight: 'bold' }
+          }} 
+        />
+        <Stack.Screen 
           name="home/lien_he" 
           options={{ 
             title: 'Liên hệ', 
