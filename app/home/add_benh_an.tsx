@@ -4,7 +4,6 @@ import {
   Text, 
   TextInput, 
   TouchableOpacity, 
-  StyleSheet, 
   ScrollView, 
   ActivityIndicator,
   Alert
@@ -16,6 +15,7 @@ import customerService from '../services/customerService';
 import medicalRecordService, { MedicalRecord } from '../services/medicalRecordService';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { styles } from '../styles/add_benh_an.styles';
 
 interface Pet {
   id: number;
@@ -251,110 +251,4 @@ export default function AddMedicalRecordScreen() {
       </View>
     </ScrollView>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#E3F2FD',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#E3F2FD',
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: '#1976D2',
-  },
-  title: {
-    fontSize: 19,
-    fontWeight: 'bold',
-    marginBottom: 25,
-    textAlign: 'center',
-    color: '#0D47A1',
-    textTransform: 'uppercase',
-    letterSpacing: 1.2,
-  },
-  formGroup: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#0D47A1',
-  },
-  input: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#BBDEFB',
-    fontSize: 16,
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: 'top',
-  },
-  pickerContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#BBDEFB',
-    overflow: 'hidden',
-  },
-  picker: {
-    height: 50,
-  },
-  dateButton: {
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#BBDEFB',
-  },
-  dateText: {
-    fontSize: 16,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-    marginBottom: 40,
-  },
-  cancelButton: {
-    backgroundColor: '#ECEFF1',
-    borderRadius: 8,
-    padding: 15,
-    flex: 1,
-    marginRight: 10,
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    color: '#455A64',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  submitButton: {
-    backgroundColor: '#1976D2',
-    borderRadius: 8,
-    padding: 15,
-    flex: 2,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginLeft: 8,
-  },
-}); 
+} 

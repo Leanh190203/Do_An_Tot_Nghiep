@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, RefreshControl } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import medicalRecordService from '../services/medicalRecordService';
+import { styles } from '../styles/benh_an.styles';
 
 interface MedicalRecordItem {
   id: number;
@@ -74,7 +75,7 @@ export default function MedicalRecordsScreen() {
           renderItem={({ item }) => (
             <TouchableOpacity 
               style={styles.card}
-              onPress={() => router.push(`/home/benh_an/${item.id}` as any)}
+              onPress={() => router.push(`/home/benh_an/${item.id}`)}
             >
               <View style={styles.cardHeader}>
                 <Text style={styles.petName}>{item.petName}</Text>
@@ -100,7 +101,7 @@ export default function MedicalRecordsScreen() {
       
       <TouchableOpacity 
         style={styles.addButton} 
-        onPress={() => router.push('/home/add_benh_an' as any)}
+        onPress={() => router.push('/home/add_benh_an')}
       >
         <Ionicons name="add-circle" size={28} color="#fff" />
         <Text style={styles.addButtonText}>Thêm Bệnh Án</Text>
@@ -108,88 +109,3 @@ export default function MedicalRecordsScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#E3F2FD',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#E3F2FD',
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: '#1976D2',
-  },
-  title: {
-    fontSize: 19,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#0D47A1',
-    textTransform: 'uppercase',
-    letterSpacing: 1.2,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyText: {
-    marginTop: 10,
-    fontSize: 18,
-    color: '#90A4AE',
-    textAlign: 'center',
-  },
-  card: {
-    backgroundColor: '#ffffff',
-    padding: 18,
-    borderRadius: 15,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  petName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1976D2',
-  },
-  cardText: {
-    fontSize: 16,
-    color: '#444',
-    marginBottom: 2,
-  },
-  addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#1976D2',
-    paddingVertical: 16,
-    borderRadius: 12,
-    marginTop: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 15,
-    fontWeight: 'bold',
-    marginLeft: 12,
-    textTransform: 'uppercase',
-  },
-});
