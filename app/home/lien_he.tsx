@@ -87,9 +87,9 @@ export default function ContactScreen() {
           <ContactCard 
             icon="facebook" 
             label="Facebook" 
-            value="Phòng khám thú cưng Đại Nam" 
+            value="Phòng khám thú cưng " 
             color="#1877F2"
-            onPress={() => handleLinkPress('https://facebook.com')} 
+            onPress={() => handleLinkPress('https://www.facebook.com/anh.lehong.73700/')} 
           />
 
           <ContactCard 

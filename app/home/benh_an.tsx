@@ -1,39 +1,106 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import medicalRecordService from '../services/medicalRecordService';
+
+interface MedicalRecordItem {
+  id: number;
+  petName: string;
+  owner: string;
+  date: string;
+  diagnosis: string;
+  phone?: string;
+  service: string;
+  clinic: string;
+  notes: string;
+}
 
 export default function MedicalRecordsScreen() {
   const router = useRouter();
-  const [medicalRecords, setMedicalRecords] = useState([
-    { id: '1', petName: 'Milu', owner: 'Trần Khánh Linh', date: '2025-02-17', diagnosis: 'Cảm nhẹ', phone: '0987654321', service: 'Khám tổng quát', clinic: 'Phòng khám A', notes: 'Cần theo dõi thêm' },
-    { id: '2', petName: 'Mèo Mun', owner: 'Lò Văn Bảo', date: '2025-02-15', diagnosis: 'Viêm da', phone: '0912345678', service: 'Điều trị da liễu', clinic: 'Phòng khám B', notes: 'Dùng thuốc theo đơn' },
-  ]);
+  const [medicalRecords, setMedicalRecords] = useState<MedicalRecordItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadMedicalRecords = async () => {
+    try {
+      const records = await medicalRecordService.getAllMedicalRecords();
+      setMedicalRecords(records);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      Alert.alert('Lỗi', 'Không thể tải danh sách bệnh án: ' + errorMessage);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    loadMedicalRecords();
+  }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadMedicalRecords();
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN');
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#1976D2" />
+        <Text style={styles.loadingText}>Đang tải danh sách bệnh án...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>📋 Danh Sách Bệnh Án</Text>
-      <FlatList
-        data={medicalRecords}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.petName}>{item.petName}</Text>
-              <Ionicons name="paw" size={24} color="#1976D2" />
-            </View>
-            <Text style={styles.cardText}>👤 Chủ: {item.owner} ({item.phone})</Text>
-            <Text style={styles.cardText}>📅 Ngày khám: {item.date}</Text>
-            <Text style={styles.cardText}>🩺 Chẩn đoán: {item.diagnosis}</Text>
-            <Text style={styles.cardText}>🛠️ Dịch vụ: {item.service}</Text>
-            <Text style={styles.cardText}>🏥 Phòng khám: {item.clinic}</Text>
-            <Text style={styles.cardText}>📝 Ghi chú: {item.notes}</Text>
-          </TouchableOpacity>
-        )}
-      />
+      
+      {medicalRecords.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Ionicons name="medical" size={60} color="#BBDEFB" />
+          <Text style={styles.emptyText}>Chưa có bệnh án nào</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={medicalRecords}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity 
+              style={styles.card}
+              onPress={() => router.push(`/home/benh_an/${item.id}` as any)}
+            >
+              <View style={styles.cardHeader}>
+                <Text style={styles.petName}>{item.petName}</Text>
+                <Ionicons name="paw" size={24} color="#1976D2" />
+              </View>
+              <Text style={styles.cardText}>👤 Chủ: {item.owner} {item.phone ? `(${item.phone})` : ''}</Text>
+              <Text style={styles.cardText}>📅 Ngày khám: {formatDate(item.date)}</Text>
+              <Text style={styles.cardText}>🩺 Chẩn đoán: {item.diagnosis}</Text>
+              <Text style={styles.cardText}>🛠️ Dịch vụ: {item.service}</Text>
+              <Text style={styles.cardText}>🏥 Phòng khám: {item.clinic}</Text>
+              {item.notes && <Text style={styles.cardText} numberOfLines={2}>📝 Ghi chú: {item.notes}</Text>}
+            </TouchableOpacity>
+          )}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#1976D2"]}
+            />
+          }
+        />
+      )}
+      
       <TouchableOpacity 
         style={styles.addButton} 
-        onPress={() => router.push('/home/add_benh_an' as never)}
+        onPress={() => router.push('/home/add_benh_an' as any)}
       >
         <Ionicons name="add-circle" size={28} color="#fff" />
         <Text style={styles.addButtonText}>Thêm Bệnh Án</Text>
@@ -48,6 +115,17 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#E3F2FD',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#E3F2FD',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#1976D2',
+  },
   title: {
     fontSize: 19,
     fontWeight: 'bold',
@@ -56,6 +134,17 @@ const styles = StyleSheet.create({
     color: '#0D47A1',
     textTransform: 'uppercase',
     letterSpacing: 1.2,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    marginTop: 10,
+    fontSize: 18,
+    color: '#90A4AE',
+    textAlign: 'center',
   },
   card: {
     backgroundColor: '#ffffff',
