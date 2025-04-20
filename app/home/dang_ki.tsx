@@ -7,6 +7,8 @@ export default function SignUpScreen() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,7 +16,7 @@ export default function SignUpScreen() {
   const handleSignUp = async () => {
     // Kiểm tra các trường bắt buộc
     if (!name || !email || !password || !confirmPassword) {
-      Alert.alert("Lỗi", "Vui lòng điền đầy đủ thông tin!");
+      Alert.alert("Lỗi", "Vui lòng điền đầy đủ thông tin bắt buộc!");
       return;
     }
 
@@ -22,6 +24,12 @@ export default function SignUpScreen() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       Alert.alert("Lỗi", "Email không đúng định dạng!");
+      return;
+    }
+
+    // Kiểm tra định dạng số điện thoại nếu đã nhập
+    if (phone && !/^[0-9]{10,11}$/.test(phone)) {
+      Alert.alert("Lỗi", "Số điện thoại không hợp lệ! Vui lòng nhập 10-11 chữ số.");
       return;
     }
 
@@ -44,7 +52,9 @@ export default function SignUpScreen() {
       const result = await authService.register({
         name,
         email,
-        password
+        password,
+        phone,
+        address
       });
       
       console.log('Đăng ký thành công:', result);
@@ -52,7 +62,7 @@ export default function SignUpScreen() {
       // Hiển thị thông báo thành công và chuyển hướng
       Alert.alert(
         "Thành công", 
-        result.message || "Đăng ký tài khoản thành công! Bạn có thể đăng nhập ngay bây giờ.", 
+        "Đăng ký tài khoản và tạo hồ sơ khách hàng thành công! Bạn có thể đăng nhập ngay bây giờ.", 
         [
           { 
             text: "Đăng nhập", 
@@ -94,7 +104,7 @@ export default function SignUpScreen() {
 
           <TextInput
             style={styles.input}
-            placeholder="Họ tên"
+            placeholder="Họ tên *"
             value={name}
             onChangeText={setName}
             placeholderTextColor="#B0C4DE"
@@ -102,7 +112,7 @@ export default function SignUpScreen() {
 
           <TextInput
             style={styles.input}
-            placeholder="Email"
+            placeholder="Email *"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -112,7 +122,24 @@ export default function SignUpScreen() {
 
           <TextInput
             style={styles.input}
-            placeholder="Mật khẩu"
+            placeholder="Số điện thoại"
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+            placeholderTextColor="#B0C4DE"
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Địa chỉ"
+            value={address}
+            onChangeText={setAddress}
+            placeholderTextColor="#B0C4DE"
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Mật khẩu *"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -121,7 +148,7 @@ export default function SignUpScreen() {
 
           <TextInput
             style={styles.input}
-            placeholder="Nhập lại mật khẩu"
+            placeholder="Nhập lại mật khẩu *"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry
